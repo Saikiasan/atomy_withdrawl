@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Copy, Check, ExternalLink, ArrowLeft, Send, Paperclip } from 'lucide-react';
 import { WithdrawalFormData, EmailDraft } from '../types';
+import { generateLocalEmailDraft } from '../utils/geminiClient';
 
 interface Step5Props {
   formData: WithdrawalFormData;
@@ -18,27 +19,11 @@ export const Step5EmailDrafter: React.FC<Step5Props> = ({ formData, onBack }) =>
   const [copiedSubject, setCopiedSubject] = useState(false);
   const [copiedBody, setCopiedBody] = useState(false);
 
-  const fetchEmailDraft = async (selectedTone: 'formal' | 'polite' | 'concise' = tone) => {
+  const fetchEmailDraft = (selectedTone: 'formal' | 'polite' | 'concise' = tone) => {
     setIsDrafting(true);
     try {
-      const response = await fetch('/api/draft-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          applicantName: formData.applicantName,
-          memberId: formData.memberId,
-          panNumber: formData.panNumber,
-          mobileNumber: formData.mobileNumber,
-          emailId: formData.emailId,
-          reason: formData.reason,
-          tone: selectedTone,
-        }),
-      });
-
-      const json = await response.json();
-      if (json.success && json.data) {
-        setDraft(json.data);
-      }
+      const generated = generateLocalEmailDraft(formData, selectedTone);
+      setDraft(generated);
     } catch {
       // Fallback
       setDraft({

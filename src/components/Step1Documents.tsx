@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Upload, Camera, Check, AlertCircle, ArrowRight, RefreshCw, FileText } from 'lucide-react';
+import { Upload, Camera, Check, AlertCircle, ArrowRight, RefreshCw, FileText, Key, Sparkles } from 'lucide-react';
 import { fileToWebPDataUrl } from '../utils/imageUtils';
 import { DocumentExtractionResult, WithdrawalFormData } from '../types';
+import { extractDocumentsWithUserKey, hasApiKey } from '../utils/geminiClient';
+import { ApiKeyModal } from './ApiKeyModal';
 
 interface Step1Props {
   formData: WithdrawalFormData;
@@ -17,6 +19,7 @@ export const Step1Documents: React.FC<Step1Props> = ({
   const [isExtracting, setIsExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [extractedInfo, setExtractedInfo] = useState<string | null>(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
   const handlePanUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,27 +62,21 @@ export const Step1Documents: React.FC<Step1Props> = ({
       return;
     }
 
+    if (!hasApiKey()) {
+      setShowKeyModal(true);
+      return;
+    }
+
     setIsExtracting(true);
     setExtractError(null);
     setExtractedInfo(null);
 
     try {
-      const response = await fetch('/api/extract-documents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          panImage: formData.panImageWebP,
-          aadhaarImage: formData.aadhaarImageWebP,
-          aadhaarBackImage: formData.aadhaarBackImageWebP,
-        }),
+      const ext = await extractDocumentsWithUserKey({
+        panImage: formData.panImageWebP,
+        aadhaarImage: formData.aadhaarImageWebP,
+        aadhaarBackImage: formData.aadhaarBackImageWebP,
       });
-
-      const json = await response.json();
-      if (!response.ok || !json.success) {
-        throw new Error(json.error || 'Failed to extract document information.');
-      }
-
-      const ext: DocumentExtractionResult = json.data;
 
       updateFormData({
         applicantName: ext.applicantName || formData.applicantName,
@@ -247,30 +244,45 @@ export const Step1Documents: React.FC<Step1Props> = ({
         </div>
       </div>
 
-      {/* AI Extraction Button */}
-      <button
-        onClick={runGeminiExtraction}
-        disabled={isExtracting || (!formData.panImageWebP && !formData.aadhaarImageWebP)}
-        className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-[0.99] ${
-          isExtracting
-            ? 'bg-slate-100 text-slate-400 cursor-wait'
-            : !formData.panImageWebP && !formData.aadhaarImageWebP
-            ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-            : 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 cursor-pointer'
-        }`}
-      >
-        {isExtracting ? (
-          <>
-            <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-600" />
-            <span>Extracting with AI...</span>
-          </>
-        ) : (
-          <>
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>{extractedInfo ? 'Re-scan with AI' : 'Scan & Extract Details with AI'}</span>
-          </>
+      {/* AI Extraction Button & Manual Skip */}
+      <div className="space-y-2">
+        <button
+          onClick={runGeminiExtraction}
+          disabled={isExtracting || (!formData.panImageWebP && !formData.aadhaarImageWebP)}
+          className={`w-full py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition active:scale-[0.99] ${
+            isExtracting
+              ? 'bg-slate-100 text-slate-400 cursor-wait'
+              : !formData.panImageWebP && !formData.aadhaarImageWebP
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              : 'bg-sky-50 text-sky-700 hover:bg-sky-100 border border-sky-200 cursor-pointer'
+          }`}
+        >
+          {isExtracting ? (
+            <>
+              <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-600" />
+              <span>Extracting with AI...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+              <span>{extractedInfo ? 'Re-scan with AI (Free Gemini)' : 'Auto-fill Details with AI (Free Gemini)'}</span>
+            </>
+          )}
+        </button>
+
+        {!hasApiKey() && (
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setShowKeyModal(true)}
+              className="text-[11px] text-slate-500 hover:text-blue-600 inline-flex items-center gap-1 cursor-pointer"
+            >
+              <Key className="w-3 h-3" />
+              <span>Set your free Gemini API key to enable AI auto-fill</span>
+            </button>
+          </div>
         )}
-      </button>
+      </div>
 
       {/* Status Messages */}
       {extractError && (
@@ -287,19 +299,39 @@ export const Step1Documents: React.FC<Step1Props> = ({
         </div>
       )}
 
-      {/* Primary Action Button */}
-      <button
-        onClick={onNext}
-        disabled={!formData.panImageWebP && !formData.aadhaarImageWebP}
-        className={`w-full py-3 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition ${
-          formData.panImageWebP || formData.aadhaarImageWebP
-            ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs active:scale-[0.99] cursor-pointer'
-            : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-        }`}
-      >
-        <span>Continue to Details</span>
-        <ArrowRight className="w-3.5 h-3.5" />
-      </button>
+      {/* Primary Action Button & Skip Option */}
+      <div className="space-y-2 pt-1">
+        <button
+          onClick={onNext}
+          disabled={!formData.panImageWebP && !formData.aadhaarImageWebP}
+          className={`w-full py-3 rounded-xl font-medium text-xs flex items-center justify-center gap-1.5 transition ${
+            formData.panImageWebP || formData.aadhaarImageWebP
+              ? 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs active:scale-[0.99] cursor-pointer'
+              : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
+          }`}
+        >
+          <span>Continue to Details</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+
+        <button
+          type="button"
+          onClick={onNext}
+          className="w-full py-2 text-center text-xs text-slate-500 hover:text-slate-800 font-medium transition cursor-pointer"
+        >
+          Skip photo upload & enter all details manually →
+        </button>
+      </div>
+
+      <ApiKeyModal
+        isOpen={showKeyModal}
+        onClose={() => setShowKeyModal(false)}
+        onKeySaved={() => {
+          if (formData.panImageWebP || formData.aadhaarImageWebP) {
+            runGeminiExtraction();
+          }
+        }}
+      />
     </div>
   );
 };

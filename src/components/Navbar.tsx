@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Check, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, ChevronDown, ChevronUp, Key } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton';
+import { ApiKeyModal } from './ApiKeyModal';
+import { hasApiKey } from '../utils/geminiClient';
 
 interface NavbarProps {
   currentStep: number;
@@ -16,6 +18,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLoadDemo,
 }) => {
   const [showStepList, setShowStepList] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
+  const [keyConfigured, setKeyConfigured] = useState(false);
+
+  useEffect(() => {
+    setKeyConfigured(hasApiKey());
+  }, []);
+
+  const refreshKeyStatus = () => {
+    setKeyConfigured(hasApiKey());
+  };
 
   const steps = [
     { num: 1, title: 'Upload Documents', short: 'Documents' },
@@ -109,8 +121,21 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
           </button>
 
-          {/* Right side actions: Demo & Install */}
-          <div className="flex items-center gap-2">
+          {/* Right side actions: API Key, Demo & Install */}
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <button
+              type="button"
+              onClick={() => setShowKeyModal(true)}
+              className={`text-[11px] font-medium px-2 py-1 rounded-md border flex items-center gap-1 transition-colors cursor-pointer ${
+                keyConfigured
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
+              }`}
+              title="Configure Google Gemini API Key"
+            >
+              <Key className="w-3 h-3" />
+              <span className="hidden sm:inline">{keyConfigured ? 'AI Key Set' : 'AI Key'}</span>
+            </button>
             {onLoadDemo && (
               <button
                 onClick={onLoadDemo}
@@ -234,6 +259,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         )}
       </div>
+      <ApiKeyModal
+        isOpen={showKeyModal}
+        onClose={() => setShowKeyModal(false)}
+        onKeySaved={refreshKeyStatus}
+      />
     </header>
   );
 };
