@@ -339,7 +339,7 @@ export async function generateAtomyWithdrawalPdf(
   }
 
   const pdfBytes = await pdfDoc.save();
-  const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: 'application/pdf' });
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
   const blobUrl = URL.createObjectURL(blob);
 
   return { pdfBytes, blobUrl };
