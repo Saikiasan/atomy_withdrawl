@@ -1,0 +1,6 @@
+{
+  "name": "Atomy Withdrawal Form Assistant",
+  "description": "AI-powered assistant to extract PAN and Aadhaar details, populate official Atomy Membership Withdrawal Request PDF forms, and draft submission emails.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
