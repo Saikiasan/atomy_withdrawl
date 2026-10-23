@@ -63,6 +63,26 @@ export const Step5EmailDrafter: React.FC<Step5Props> = ({ formData, onBack }) =>
     draft.recipient
   )}&su=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`;
 
+  const userEmail = formData.emailId?.trim();
+
+  const userMailtoUrl = userEmail
+    ? `mailto:${userEmail}?subject=${encodeURIComponent(
+        `[Copy for your records] ${draft.subject}`
+      )}&body=${encodeURIComponent(
+        `Hi ${formData.applicantName || 'Member'},\n\nHere is a copy of your drafted Atomy Membership Withdrawal Request email for your personal records:\n\n-------------------------\nRecipient: ${draft.recipient}\nSubject: ${draft.subject}\n\n${draft.body}\n-------------------------\n\n(Note: Please ensure you also send the official email to Atomy India at ${draft.recipient} with your generated PDF attached.)`
+      )}`
+    : null;
+
+  const userGmailUrl = userEmail
+    ? `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+        userEmail
+      )}&su=${encodeURIComponent(
+        `[Copy for your records] ${draft.subject}`
+      )}&body=${encodeURIComponent(
+        `Hi ${formData.applicantName || 'Member'},\n\nHere is a copy of your drafted Atomy Membership Withdrawal Request email for your personal records:\n\n-------------------------\nRecipient: ${draft.recipient}\nSubject: ${draft.subject}\n\n${draft.body}\n-------------------------\n\n(Note: Please ensure you also send the official email to Atomy India at ${draft.recipient} with your generated PDF attached.)`
+      )}`
+    : null;
+
   return (
     <div className="space-y-4">
       {/* Title */}
@@ -178,7 +198,7 @@ export const Step5EmailDrafter: React.FC<Step5Props> = ({ formData, onBack }) =>
             className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-medium text-xs flex items-center justify-center gap-2 active:scale-[0.99] transition shadow-xs"
           >
             <Send className="w-3.5 h-3.5" />
-            <span>Open in Phone Email App</span>
+            <span>Send to Atomy Support (Email App)</span>
           </a>
 
           <a
@@ -188,9 +208,53 @@ export const Step5EmailDrafter: React.FC<Step5Props> = ({ formData, onBack }) =>
             className="w-full py-2.5 px-3 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium text-xs flex items-center justify-center gap-1.5 active:scale-[0.99] transition"
           >
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-            <span>Open in Gmail (Web)</span>
+            <span>Open in Gmail (Web) to Atomy</span>
           </a>
         </div>
+      </div>
+
+      {/* Copy to Member's Personal Email Section */}
+      <div className="bg-sky-50/70 p-3.5 rounded-xl border border-sky-200/70 shadow-2xs space-y-2.5">
+        <div className="flex items-start gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-sky-100 border border-sky-200 flex items-center justify-center text-sky-700 shrink-0 mt-0.5">
+            <Mail className="w-3.5 h-3.5" />
+          </div>
+          <div>
+            <h3 className="text-xs font-semibold text-slate-900">Send Copy to Your Own Email</h3>
+            <p className="text-[11px] text-slate-600 mt-0.5">
+              Keep a copy of this withdrawal draft in your personal inbox:
+              <span className="font-semibold text-slate-800 ml-1">
+                {userEmail || '(No email provided in Step 2)'}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {userEmail ? (
+          <div className="grid grid-cols-2 gap-2 pt-0.5">
+            <a
+              href={userMailtoUrl!}
+              className="py-2 px-3 rounded-lg bg-white border border-sky-300 hover:bg-sky-50 text-sky-800 font-medium text-xs flex items-center justify-center gap-1.5 transition active:scale-[0.99]"
+            >
+              <Send className="w-3 h-3" />
+              <span>Mail to Myself</span>
+            </a>
+
+            <a
+              href={userGmailUrl!}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-2 px-3 rounded-lg bg-white border border-sky-300 hover:bg-sky-50 text-sky-800 font-medium text-xs flex items-center justify-center gap-1.5 transition active:scale-[0.99]"
+            >
+              <ExternalLink className="w-3 h-3 text-sky-600" />
+              <span>Gmail to Myself</span>
+            </a>
+          </div>
+        ) : (
+          <div className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200/80">
+            If you'd like a copy emailed to yourself, please go back to Step 2 and enter your email address.
+          </div>
+        )}
       </div>
 
       {/* Back button */}
