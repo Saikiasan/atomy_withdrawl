@@ -113,33 +113,47 @@ export const Step1Documents: React.FC<Step1Props> = ({
         </p>
       </div>
 
-      {/* Upload Cards: Mobile-first stacked layout */}
-      <div className="space-y-3">
+      {/* Upload Cards: Mobile-first stacked layout, 2-column grid on md+ desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {/* PAN Card Card */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <span className="text-xs font-semibold text-slate-900">
-                PAN Card <span className="text-rose-500">*</span>
-              </span>
-              <p className="text-[11px] text-slate-400">Pasted into withdrawal form</p>
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <span className="text-xs font-semibold text-slate-900">
+                  PAN Card <span className="text-rose-500">*</span>
+                </span>
+                <p className="text-[11px] text-slate-400">Pasted into withdrawal form</p>
+              </div>
+              {formData.panImageWebP && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                  <Check className="w-3 h-3" /> Ready
+                </span>
+              )}
             </div>
-            {formData.panImageWebP && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                <Check className="w-3 h-3" /> Ready
-              </span>
-            )}
-          </div>
 
-          {formData.panImageWebP ? (
-            <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-36 flex items-center justify-center">
-              <img
-                src={formData.panImageWebP}
-                alt="PAN Card"
-                className="w-full h-full object-contain"
-              />
-              <label className="absolute bottom-2 right-2 bg-black/70 hover:bg-black text-white text-[10px] font-medium px-2 py-1 rounded-md cursor-pointer transition">
-                Change
+            {formData.panImageWebP ? (
+              <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-40 sm:h-44 flex items-center justify-center">
+                <img
+                  src={formData.panImageWebP}
+                  alt="PAN Card"
+                  className="w-full h-full object-contain"
+                />
+                <label className="absolute bottom-2 right-2 bg-black/70 hover:bg-black text-white text-[10px] font-medium px-2 py-1 rounded-md cursor-pointer transition">
+                  Change
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePanUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            ) : (
+              <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-4 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-40 sm:h-44">
+                <Camera className="w-6 h-6 text-slate-400" />
+                <span className="text-xs font-medium text-slate-700">Take Photo or Upload PAN</span>
+                <span className="text-[10px] text-slate-400">Front side only (WebP / JPG / PNG)</span>
                 <input
                   type="file"
                   accept="image/*"
@@ -147,47 +161,49 @@ export const Step1Documents: React.FC<Step1Props> = ({
                   className="hidden"
                 />
               </label>
-            </div>
-          ) : (
-            <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-4 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-28">
-              <Camera className="w-5 h-5 text-slate-400" />
-              <span className="text-xs font-medium text-slate-700">Take Photo or Upload PAN</span>
-              <span className="text-[10px] text-slate-400">Front side only (WebP)</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePanUpload}
-                className="hidden"
-              />
-            </label>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Aadhaar Card Card */}
-        <div className="bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-2xs">
-          <div className="flex items-center justify-between mb-2">
-            <div>
-              <span className="text-xs font-semibold text-slate-900">Aadhaar Card</span>
-              <p className="text-[11px] text-slate-400">For name and address verification</p>
+        <div className="bg-white rounded-xl border border-slate-200/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <span className="text-xs font-semibold text-slate-900">Aadhaar Card</span>
+                <p className="text-[11px] text-slate-400">For name & address verification</p>
+              </div>
+              {(formData.aadhaarImageWebP || formData.aadhaarBackImageWebP) && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                  <Check className="w-3 h-3" /> Added
+                </span>
+              )}
             </div>
-            {(formData.aadhaarImageWebP || formData.aadhaarBackImageWebP) && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
-                <Check className="w-3 h-3" /> Added
-              </span>
-            )}
-          </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            {/* Front */}
-            {formData.aadhaarImageWebP ? (
-              <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-24 flex items-center justify-center">
-                <img
-                  src={formData.aadhaarImageWebP}
-                  alt="Aadhaar Front"
-                  className="w-full h-full object-contain"
-                />
-                <label className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer">
-                  Replace
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* Front */}
+              {formData.aadhaarImageWebP ? (
+                <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-40 sm:h-44 flex items-center justify-center">
+                  <img
+                    src={formData.aadhaarImageWebP}
+                    alt="Aadhaar Front"
+                    className="w-full h-full object-contain"
+                  />
+                  <label className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer">
+                    Replace
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAadhaarUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-3 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-40 sm:h-44">
+                  <Upload className="w-5 h-5 text-slate-400" />
+                  <span className="text-[11px] font-medium text-slate-700">Aadhaar Front</span>
+                  <span className="text-[9px] text-slate-400">Photo / ID side</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -195,30 +211,31 @@ export const Step1Documents: React.FC<Step1Props> = ({
                     className="hidden"
                   />
                 </label>
-              </div>
-            ) : (
-              <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-3 text-center cursor-pointer flex flex-col items-center justify-center gap-1 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-24">
-                <Upload className="w-4 h-4 text-slate-400" />
-                <span className="text-[11px] font-medium text-slate-700">Aadhaar Front</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAadhaarUpload}
-                  className="hidden"
-                />
-              </label>
-            )}
+              )}
 
-            {/* Back (Address) */}
-            {formData.aadhaarBackImageWebP ? (
-              <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-24 flex items-center justify-center">
-                <img
-                  src={formData.aadhaarBackImageWebP}
-                  alt="Aadhaar Back"
-                  className="w-full h-full object-contain"
-                />
-                <label className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer">
-                  Replace
+              {/* Back (Address) */}
+              {formData.aadhaarBackImageWebP ? (
+                <div className="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-900 h-40 sm:h-44 flex items-center justify-center">
+                  <img
+                    src={formData.aadhaarBackImageWebP}
+                    alt="Aadhaar Back"
+                    className="w-full h-full object-contain"
+                  />
+                  <label className="absolute bottom-1.5 right-1.5 bg-black/70 text-white text-[9px] px-1.5 py-0.5 rounded cursor-pointer">
+                    Replace
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAadhaarBackUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-3 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-40 sm:h-44">
+                  <Upload className="w-5 h-5 text-slate-400" />
+                  <span className="text-[11px] font-medium text-slate-700">Aadhaar Back</span>
+                  <span className="text-[9px] text-slate-400">Address side</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -226,20 +243,8 @@ export const Step1Documents: React.FC<Step1Props> = ({
                     className="hidden"
                   />
                 </label>
-              </div>
-            ) : (
-              <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-lg p-3 text-center cursor-pointer flex flex-col items-center justify-center gap-1 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-24">
-                <Upload className="w-4 h-4 text-slate-400" />
-                <span className="text-[11px] font-medium text-slate-700">Aadhaar Back</span>
-                <span className="text-[9px] text-slate-400">Optional</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAadhaarBackUpload}
-                  className="hidden"
-                />
-              </label>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

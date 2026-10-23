@@ -125,7 +125,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50/70 text-slate-800 flex flex-col font-sans antialiased selection:bg-sky-500 selection:text-white">
       <Navbar
         currentStep={currentStep}
         setStep={setCurrentStep}
@@ -134,7 +134,8 @@ export default function App() {
       />
       <OfflineIndicator />
 
-      <main className="flex-1 max-w-md sm:max-w-xl w-full mx-auto px-4 py-4 sm:py-6">
+      {/* Responsive Container: Fluid mobile padding, expanding up to 3xl / 4xl on desktop screens */}
+      <main className="flex-1 w-full max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 transition-all">
         {currentStep === 1 && (
           <Step1Documents
             formData={formData}
@@ -177,8 +178,11 @@ export default function App() {
         )}
       </main>
 
-      <footer className="mt-auto py-4 text-center text-[11px] text-slate-400">
-        <p>Membership Withdrawal Form • AI Assistant</p>
+      <footer className="mt-auto py-5 text-center text-xs text-slate-400 border-t border-slate-100 bg-white/50 backdrop-blur-xs">
+        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Atomy Membership Withdrawal Form Assistant</span>
+          <span className="text-[11px] text-slate-400">Mobile & Desktop Cross-Platform Compatible</span>
+        </div>
       </footer>
     </div>
   );

@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-2xs">
-      <div className="max-w-md sm:max-w-xl mx-auto px-4 py-2.5">
+      <div className="max-w-xl md:max-w-2xl lg:max-w-3xl xl:max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5">
         <div className="flex items-center justify-between">
           {/* Left: Compact Circular Progress Stepper & Title */}
           <button

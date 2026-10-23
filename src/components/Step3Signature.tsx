@@ -121,9 +121,9 @@ export const Step3Signature: React.FC<Step3Props> = ({
         </p>
       </div>
 
-      <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs space-y-3.5">
+      <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/80 shadow-2xs space-y-4">
         {/* Minimal Tab Switcher */}
-        <div className="flex bg-slate-100 p-0.5 rounded-lg text-xs">
+        <div className="flex bg-slate-100 p-0.5 rounded-lg text-xs max-w-sm mx-auto">
           <button
             type="button"
             onClick={() => setActiveTab('draw')}
@@ -152,7 +152,7 @@ export const Step3Signature: React.FC<Step3Props> = ({
         {activeTab === 'draw' && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[11px] text-slate-400">
-              <span>Sign within the box below</span>
+              <span>Sign using mouse, stylus, or touch</span>
               <button
                 type="button"
                 onClick={clearCanvas}
@@ -163,7 +163,7 @@ export const Step3Signature: React.FC<Step3Props> = ({
               </button>
             </div>
 
-            <div className="border border-slate-200 rounded-xl bg-slate-50/50 overflow-hidden relative touch-none h-40">
+            <div className="border border-slate-200 rounded-xl bg-slate-50/50 overflow-hidden relative touch-none h-44 sm:h-52">
               <canvas
                 ref={canvasRef}
                 onMouseDown={startDrawing}
@@ -176,8 +176,8 @@ export const Step3Signature: React.FC<Step3Props> = ({
                 className="w-full h-full cursor-crosshair"
               />
               {!hasDrawn && !formData.signatureImageWebP && (
-                <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-300 text-xs">
-                  Draw signature here
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center text-slate-300 text-xs sm:text-sm">
+                  Sign here on screen
                 </div>
               )}
             </div>
@@ -187,12 +187,12 @@ export const Step3Signature: React.FC<Step3Props> = ({
         {/* Tab 2: Upload Photo */}
         {activeTab === 'upload' && (
           <div className="space-y-2">
-            <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-36">
-              <Upload className="w-5 h-5 text-slate-400" />
-              <span className="text-xs font-medium text-slate-700">
+            <label className="border border-dashed border-slate-300 hover:border-slate-400 rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center gap-1.5 bg-slate-50/50 hover:bg-slate-50 transition active:scale-[0.99] h-44 sm:h-52">
+              <Upload className="w-6 h-6 text-slate-400" />
+              <span className="text-xs sm:text-sm font-medium text-slate-700">
                 {isProcessing ? 'Cleaning background...' : 'Upload Signature Photo'}
               </span>
-              <span className="text-[10px] text-slate-400">Written on blank white paper</span>
+              <span className="text-[10px] text-slate-400">Written on clean white paper</span>
               <input
                 type="file"
                 accept="image/*"
